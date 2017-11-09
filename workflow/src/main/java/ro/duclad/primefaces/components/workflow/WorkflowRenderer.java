@@ -62,13 +62,13 @@ public class WorkflowRenderer extends BaseMenuRenderer {
         ResponseWriter writer = context.getResponseWriter();
         String itemClass;
         if (workflow.isReadonly()) {
-            itemClass = workflow.getCurrentStep().equals(item.getValue()) ? "ui-workflow-item ui-state-highlight ui-corner-all" : "ui-workflow-item ui-state-default ui-state-disabled ui-corner-all";
+            itemClass = workflow.getCurrentStep().equals(item.getValue()) ? "ui-workflow-step ui-state-highlight ui-corner-all" : "ui-workflow-step ui-state-default ui-state-disabled ui-corner-all";
         } else if (workflow.getCurrentStep().equals(item.getValue())) {
-            itemClass = "ui-workflow-item ui-state-highlight ui-corner-all";
+            itemClass = "ui-workflow-step ui-state-highlight ui-corner-all";
         } else if (item.isExecuted()) {
-            itemClass = "ui-workflow-item ui-state-default ui-corner-all";
+            itemClass = "ui-workflow-step ui-state-default ui-corner-all";
         } else {
-            itemClass = "ui-workflow-item ui-state-default ui-state-disabled ui-corner-all";
+            itemClass = "ui-workflow-step ui-state-default ui-state-disabled ui-corner-all";
         }
 
         String containerStyle = item.getContainerStyle();
