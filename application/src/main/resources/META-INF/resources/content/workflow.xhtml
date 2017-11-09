@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:w="http://ro.duclad.primefaces/workflow">
+    <f:metadata>
+        <f:viewAction action="#{workflowMBean.init}"/>
+    </f:metadata>
+    <p:panelGrid columns="1" layout="grid">
+        <p:selectOneMenu id="fileId" value="#{workflowMBean.fileId}" style="width:255px;align-self: left">
+            <f:selectItem itemLabel="Select One Case" itemValue=""/>
+            <f:selectItem itemLabel="Workflow ongoing with problems" itemValue="file1"/>
+            <f:selectItem itemLabel="Workflow ongoing with success" itemValue="file2"/>
+            <f:selectItem itemLabel="Workflow fisnished with errors" itemValue="file3"/>
+            <f:ajax execute="fileId" event="change" listener="#{workflowMBean.loadWorkflow}" render="workflow"/>
+        </p:selectOneMenu>
+        <p:spacer height="10"/>
+
+        <w:workflow currentStep="#{workflowMBean.currentStep.name}" model="#{workflowMBean.workflow}" styleClass="custom" readonly="false" id="workflow"/>
+
+        <!--<w:workflow activeIndex="3" styleClass="custom" readonly="false">-->
+        <!--<w:workflowitem value="Reception" url="#" duration="#{1}" styleClass="step-with-problems"/>-->
+        <!--<w:workflowitem value="Data Capture" duration="#{3}" url="#" styleClass="step-ok"/>-->
+        <!--<w:workflowitem value="Formality Examination" duration="#{5}" url="#" styleClass="step-ok"/>-->
+        <!--<w:workflowitem value="Classification" duration="#{9}" url="#" styleClass="step-ok"/>-->
+        <!--<w:workflowitem value="Search" duration="#{10}" url="#"/>-->
+        <!--<w:workflowitem value="Publication" duration="#{12}" url="#"/>-->
+        <!--<w:workflowitem value="Examination" duration="#{16}" url="#"/>-->
+        <!--</w:workflow>-->
+        <p:spacer height="30"/>
+
+    </p:panelGrid>
+
+
+    <style type="text/css">
+        .ui-workflow.custom {
+            margin-bottom: 30px;
+        }
+
+        .ui-workflow.custom .ui-workflow-item .ui-menuitem-link {
+            height: 10px;
+            padding: 0 1em;
+        }
+
+        .ui-workflow.custom .ui-workflow-item .ui-workflow-number {
+            background-color: #0081c2;
+            color: #FFFFFF;
+            display: inline-block;
+            width: 30px;
+            border-radius: 10px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .step-with-problems {
+            background-color: orange;
+        }
+
+        /*.ui-workflow.custom .ui-workflow-item .ui-menuitem-link.step-with-problems .ui-workflow-number{*/
+        /*background-color: orange;*/
+        /*color: #FFFFFF;*/
+        /*display: inline-block;*/
+        /*width: 30px;*/
+        /*border-radius: 10px;*/
+        /*margin-top: -10px;*/
+        /*margin-bottom: 10px;*/
+        /*margin-bottom: 10px;*/
+        /*}*/
+
+        .step-ok {
+            background-color: limegreen;
+        }
+
+        .ui-workflow-duration-overpass {
+            color: red;
+        }
+
+        .ui-workflow-duration {
+            color: green;
+        }
+
+    </style>
+</ui:composition>

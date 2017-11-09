@@ -1,0 +1,54 @@
+.ui-workflow ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ui-workflow .ui-workflow-item {
+    float: left;
+    box-sizing: border-box;
+}
+
+.ui-workflow .ui-workflow-item .ui-menuitem-link {
+    text-decoration: none;
+    display: block;
+    padding: 1em;
+    position: relative;
+    text-align: center;
+}
+
+.ui-workflow .ui-workflow-item.ui-state-highlight .ui-menuitem-link,
+.ui-workflow .ui-workflow-item.ui-state-disabled .ui-menuitem-link {
+    cursor: default;
+}
+
+.ui-workflow .ui-workflow-number {
+    font-size: 200%;
+    display: block;
+}
+
+.ui-workflow .ui-workflow-title {
+    display: block;
+    white-space: nowrap;
+
+}
+
+.ui-workflow .ui-workflow-step-late {
+    color: crimson;
+}
+
+.ui-workflow .ui-workflow-step-early {
+    color: limegreen;
+}
+
+.ui-workflow-step-problematic {
+    background-color: orange;
+}
+
+.ui-workflow-step-failed {
+    background-color: red;
+}
+
+.ui-workflow-step-ok {
+    background-color: lime;
+}
