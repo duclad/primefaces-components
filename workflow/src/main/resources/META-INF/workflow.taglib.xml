@@ -67,9 +67,15 @@
         </attribute>
         <attribute>
             <description><![CDATA[Current step of the workflow.]]></description>
-            <name>currentStep</name>
+            <name>executedSteps</name>
+            <required>true</required>
+            <type>org.primefaces.model.menu.MenuModel</type>
+        </attribute>
+        <attribute>
+            <description><![CDATA[Defines if we want to display the step index]]></description>
+            <name>showIndex</name>
             <required>false</required>
-            <type>java.lang.String</type>
+            <type>java.lang.Boolean</type>
         </attribute>
     </tag>
     <tag>
@@ -332,39 +338,39 @@
         </attribute>
         <attribute>
             <description><![CDATA[Defines the limitDuration]]></description>
-            <name>limitDuration</name>
+            <name>stepLimitDuration</name>
             <required>false</required>
             <type>java.lang.Integer</type>
         </attribute>
         <attribute>
             <description><![CDATA[Defines the current duration]]></description>
-            <name>duration</name>
+            <name>stepDuration</name>
             <required>false</required>
             <type>java.lang.Integer</type>
         </attribute>
         <attribute>
             <description><![CDATA[Defines wether the current duration should be displayed]]></description>
-            <name>showDuration</name>
+            <name>showStepDuration</name>
             <required>false</required>
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
-            <description><![CDATA[Defines if the curent step was problematic]]></description>
-            <name>problematic</name>
+            <description><![CDATA[Defines the current step status]]></description>
+            <name>stepProblematic</name>
             <required>false</required>
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
-            <description><![CDATA[Defines if the curent step was executed]]></description>
-            <name>executed</name>
+            <description><![CDATA[Defines the curent step status]]></description>
+            <name>stepState</name>
             <required>false</required>
-            <type>java.lang.Boolean</type>
+            <type>ro.duclad.primefaces.components.workflow.WorkflowItem.WorkflowItemState</type>
         </attribute>
         <attribute>
-            <description><![CDATA[Defines if the curent step was executed]]></description>
-            <name>failed</name>
+            <description><![CDATA[Defines the curent step outcome]]></description>
+            <name>stepOutcome</name>
             <required>false</required>
-            <type>java.lang.Boolean</type>
+            <type>java.lang.String</type>
         </attribute>
     </tag>
 </facelet-taglib>

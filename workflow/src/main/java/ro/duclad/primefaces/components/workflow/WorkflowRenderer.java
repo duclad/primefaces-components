@@ -3,7 +3,6 @@ package ro.duclad.primefaces.components.workflow;
 import org.primefaces.component.menu.AbstractMenu;
 import org.primefaces.component.menu.BaseMenuRenderer;
 import org.primefaces.model.menu.MenuElement;
-import org.primefaces.model.menu.MenuItem;
 import org.primefaces.util.ComponentTraversalUtils;
 
 import javax.faces.FacesException;
@@ -13,40 +12,60 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.render.FacesRenderer;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @FacesRenderer(componentFamily = "ro.duclad.primefaces.components", rendererType = "ro.duclad.primefaces.components.WorkflowRenderer")
 public class WorkflowRenderer extends BaseMenuRenderer {
     public WorkflowRenderer() {
     }
 
+    private void updateWorkflow(Workflow workflow) {
+        workflow.getExecutedSteps().getElements().stream().map(step -> (WorkflowItem) step).forEach(step -> {
+            Optional<WorkflowItem> workflowStep = workflow.getModel().getElements().stream().map(item -> (WorkflowItem) item).filter(item -> item.getValue().equals(step.getValue())).findFirst();
+            if (workflowStep.isPresent()) {
+                WorkflowItem item = workflowStep.get();
+                item.setStepDuration(step.getStepDuration());
+                item.setStepProblematic(step.isStepProblematic());
+                if (step.getStepState() == WorkflowItem.WorkflowItemState.FAILED) {
+                    item.setStepState(WorkflowItem.WorkflowItemState.NOT_EXECUTED);
+                    workflow.getModel().getElements().stream().map(workflowItem -> (WorkflowItem) workflowItem).reduce((a, b) -> b).ifPresent(workflowItem -> {
+                        workflowItem.setValue(step.getStepOutcome() == null ? "Failed in step: " + step.getValue() : step.getStepOutcome());
+                        workflowItem.setStepState(WorkflowItem.WorkflowItemState.FAILED);
+                    });
+                } else {
+                    item.setStepState(step.getStepState());
+                }
+            }
+        });
+    }
+
     protected void encodeMarkup(FacesContext context, AbstractMenu abstractMenu) throws IOException {
         ResponseWriter writer = context.getResponseWriter();
         Workflow workflow = (Workflow) abstractMenu;
         String clientId = workflow.getClientId(context);
-        String styleClass = workflow.getStyleClass();
-        String containerClass = workflow.isReadonly() ? "ui-workflow ui-workflow-readonly ui-widget ui-helper-clearfix" : "ui-workflow ui-widget ui-helper-clearfix";
-        styleClass = styleClass == null ? containerClass : containerClass + " " + styleClass;
         int activeIndex = workflow.getActiveIndex();
+        updateWorkflow(workflow);
         List<MenuElement> elements = workflow.getElements();
         writer.startElement("div", workflow);
         writer.writeAttribute("id", clientId, null);
-        writer.writeAttribute("class", styleClass, "styleClass");
+        String styleClass = " ";
+        if (workflow.getStyleClass() != null) {
+            styleClass = styleClass + workflow.getStyleClass();
+        }
         if (workflow.getStyle() != null) {
             writer.writeAttribute("style", workflow.getStyle(), "style");
         }
 
         writer.startElement("ul", null);
         writer.writeAttribute("role", "tablist", null);
+        writer.writeAttribute("class", "ui-workflow" + styleClass, null);
         int i = 0;
         if (elements != null && !elements.isEmpty()) {
-            Iterator var11 = elements.iterator();
 
-            while (var11.hasNext()) {
-                MenuElement element = (MenuElement) var11.next();
+            for (MenuElement element : elements) {
                 if (element.isRendered() && element instanceof WorkflowItem) {
                     this.encodeItem(context, workflow, (WorkflowItem) element, activeIndex, i);
                     ++i;
@@ -56,19 +75,29 @@ public class WorkflowRenderer extends BaseMenuRenderer {
 
         writer.endElement("ul");
         writer.endElement("div");
+        writer.startElement("script", null);
+        writer.writeText("adjustWorkflow()", null);
+        writer.endElement("script");
     }
 
-    protected void encodeItem(FacesContext context, Workflow workflow, WorkflowItem item, int activeIndex, int index) throws IOException {
+
+    private void encodeItem(FacesContext context, Workflow workflow, WorkflowItem item, int activeIndex, int index) throws IOException {
         ResponseWriter writer = context.getResponseWriter();
-        String itemClass;
+        String itemClass = "ui-workflow-step ";
+        if (item.getStepState() == WorkflowItem.WorkflowItemState.NOT_EXECUTED) {
+            itemClass += Workflow.STEP_NOTEXECUTED_CLASS;
+        } else if (item.isStepProblematic()) {
+            itemClass += Workflow.STEP_PROBLEMATIC_CLASS;
+        } else if (item.getStepState() == WorkflowItem.WorkflowItemState.EXECUTED) {
+            itemClass += Workflow.STEP_EXECUTED_CLASS;
+        } else if (item.getStepState() == WorkflowItem.WorkflowItemState.FAILED) {
+            itemClass += Workflow.STEP_FAILED_CLASS;
+        } else if (item.getStepState() == WorkflowItem.WorkflowItemState.RUNNING) {
+            itemClass += Workflow.STEP_RUNNING_CLASS;
+        }
+
         if (workflow.isReadonly()) {
-            itemClass = workflow.getCurrentStep().equals(item.getValue()) ? "ui-workflow-item ui-state-highlight ui-corner-all" : "ui-workflow-item ui-state-default ui-state-disabled ui-corner-all";
-        } else if (workflow.getCurrentStep().equals(item.getValue())) {
-            itemClass = "ui-workflow-item ui-state-highlight ui-corner-all";
-        } else if (item.isExecuted()) {
-            itemClass = "ui-workflow-item ui-state-default ui-corner-all";
-        } else {
-            itemClass = "ui-workflow-item ui-state-default ui-state-disabled ui-corner-all";
+            itemClass += Workflow.WORKFLOW_DISABLED_CLASS;
         }
 
         String containerStyle = item.getContainerStyle();
@@ -96,7 +125,7 @@ public class WorkflowRenderer extends BaseMenuRenderer {
     }
 
 
-    protected void encodeMenuItem(FacesContext context, Workflow workflow, WorkflowItem menuitem, int activeIndex, int index) throws IOException {
+    private void encodeMenuItem(FacesContext context, Workflow workflow, WorkflowItem menuitem, int activeIndex, int index) throws IOException {
         ResponseWriter writer = context.getResponseWriter();
         String title = menuitem.getTitle();
         String style = menuitem.getStyle();
@@ -115,15 +144,8 @@ public class WorkflowRenderer extends BaseMenuRenderer {
             writer.writeAttribute("style", style, null);
         }
 
-        if (!workflow.isReadonly() && !menuitem.isDisabled() && menuitem.isExecuted()) {
+        if (!workflow.isReadonly() && !menuitem.isDisabled() && menuitem.getStepState() != WorkflowItem.WorkflowItemState.NOT_EXECUTED) {
             String onclick = menuitem.getOnclick();
-            if (menuitem.isFailed()) {
-                writer.writeAttribute("class", styleClass + " " + Workflow.STEP_FAILED_CLASS, null);
-            } else if (menuitem.isProblematic()) {
-                writer.writeAttribute("class", styleClass + " " + Workflow.STEP_PROBLEMATIC_CLASS, null);
-            } else {
-                writer.writeAttribute("class", styleClass + " " + Workflow.STEP_OK_CLASS, null);
-            }
             if (menuitem.getUrl() == null && menuitem.getOutcome() == null) {
                 writer.writeAttribute("href", "#", null);
                 UIComponent form = ComponentTraversalUtils.closestForm(context, workflow);
@@ -136,12 +158,12 @@ public class WorkflowRenderer extends BaseMenuRenderer {
                     String menuClientId = workflow.getClientId(context);
                     Map<String, List<String>> params = menuitem.getParams();
                     if (params == null) {
-                        params = new LinkedHashMap();
+                        params = new LinkedHashMap<>();
                     }
 
-                    List<String> idParams = new ArrayList();
+                    List<String> idParams = new ArrayList<>();
                     idParams.add(menuitem.getId());
-                    ((Map) params).put(menuClientId + "_menuid", idParams);
+                    params.put(menuClientId + "_menuid", idParams);
                     command = menuitem.isAjax() ? this.buildAjaxRequest(context, workflow, menuitem, form, params) : this.buildNonAjaxRequest(context, workflow, form, menuClientId, params, true);
                 } else {
                     command = menuitem.isAjax() ? this.buildAjaxRequest(context, menuitem, form) : this.buildNonAjaxRequest(context, menuitem, form, menuitem.getClientId(context), true);
@@ -160,41 +182,31 @@ public class WorkflowRenderer extends BaseMenuRenderer {
                 writer.writeAttribute("onclick", onclick, null);
             }
         } else {
-            writer.writeAttribute("class", styleClass, null);
             writer.writeAttribute("href", "#", null);
             writer.writeAttribute("onclick", "return false;", null);
         }
-
-        writer.startElement("span", workflow);
-        writer.writeAttribute("class", Workflow.STEP_NUMBER_CLASS, null);
-        writer.writeText(index + 1, null);
-        writer.endElement("span");
         Object value = menuitem.getValue();
         writer.startElement("span", workflow);
         writer.writeAttribute("class", Workflow.STEP_TITLE_CLASS, null);
-        writer.writeText(value, null);
-        writer.endElement("span");
-        if (menuitem.isShowDuration()) {
-            writer.startElement("span", workflow);
-            writer.writeAttribute("style", Workflow.INLINE_STYLE, null);
-            writer.writeAttribute("class", Workflow.STEP_TITLE_CLASS, null);
-            writer.writeText(menuitem.getDuration() == null ? menuitem.getLimitDuration() : menuitem.getDuration(), null);
-            writer.endElement("span");
-            if (menuitem.getDuration() != null && menuitem.getDuration() < menuitem.getLimitDuration()) {
-                writer.startElement("span", workflow);
-                writer.writeAttribute("style", Workflow.INLINE_STYLE, null);
+        if (workflow.isShowIndex()) {
+            writer.writeText(index + 1 + ". ", null);
+        }
+        writer.writeText(value + " ", null);
+        if (menuitem.isShowStepDuration() && menuitem.getStepState()!= WorkflowItem.WorkflowItemState.FAILED) {
+            writer.writeText(menuitem.getStepDuration() == null ? menuitem.getStepLimitDuration() : menuitem.getStepDuration(), null);
+            if (menuitem.getStepDuration() != null && menuitem.getStepDuration() < menuitem.getStepLimitDuration()) {
+                writer.startElement("font", workflow);
                 writer.writeAttribute("class", Workflow.STEP_EARLY_CLASS, null);
-                writer.writeText("(-" + (menuitem.getLimitDuration() - menuitem.getDuration()) + ")", null);
-                writer.endElement("span");
-            } else if (menuitem.getDuration() != null && menuitem.getDuration() > menuitem.getLimitDuration()) {
-                writer.startElement("span", workflow);
-                writer.writeAttribute("style", Workflow.INLINE_STYLE, null);
+                writer.writeText("(-" + (menuitem.getStepLimitDuration() - menuitem.getStepDuration()) + ")", null);
+                writer.endElement("font");
+            } else if (menuitem.getStepDuration() != null && menuitem.getStepDuration() > menuitem.getStepLimitDuration()) {
+                writer.startElement("font", workflow);
                 writer.writeAttribute("class", Workflow.STEP_LATE_CLASS, null);
-                writer.writeText("(+" + (menuitem.getDuration() - menuitem.getLimitDuration()) + ")", null);
-                writer.endElement("span");
+                writer.writeText("(+" + (menuitem.getStepDuration() - menuitem.getStepLimitDuration()) + ")", null);
+                writer.endElement("font");
             }
         }
-
+        writer.endElement("span");
         writer.endElement("a");
     }
 }

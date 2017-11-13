@@ -1,15 +1,22 @@
 package ro.duclad.primefaces.application.domain;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@AllArgsConstructor
+@Builder
 @EqualsAndHashCode(of = "name")
 public class WorkflowStep {
     private String name;
     private int duration;
-    private Boolean problematic;
+    private boolean problematic;
+    @Builder.Default
+    private WorkflowStepStatus status = WorkflowStepStatus.EXECUTED;
+    private String outcome;
+
+    public enum WorkflowStepStatus {EXECUTED, RUNNING, FAILED}
+
 
 }
+

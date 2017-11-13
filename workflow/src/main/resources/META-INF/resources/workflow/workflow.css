@@ -1,54 +1,132 @@
-.ui-workflow ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
+.ui-workflow {
+    overflow: hidden;
+    margin: 0px;
+    padding: 0px;
+    white-space: nowrap;
+    border-left: 2px solid;
+    border-right: 2px solid;
+    width: 100%;
+    counter-reset: ui-workflow-step;
+
 }
 
-.ui-workflow .ui-workflow-item {
-    float: left;
+.ui-workflow *,
+.ui-workflow *:after,
+.ui-workflow *:before {
     box-sizing: border-box;
 }
 
-.ui-workflow .ui-workflow-item .ui-menuitem-link {
-    text-decoration: none;
-    display: block;
-    padding: 1em;
+.ui-workflow-step {
     position: relative;
-    text-align: center;
+    display: inline-block;
+    left: -28px; /* -2px default + 26px offset to hide skewed area on the left side of first element*/
+    height: 50px;
+    line-height: 50px;
+    margin-left: 0px;
+    margin-right: 0px;
+    counter-increment: ui-workflow-step;
+    cursor: pointer;
+    transition: background 1s;
+    min-height: 30px;
+    z-index:0;
 }
 
-.ui-workflow .ui-workflow-item.ui-state-highlight .ui-menuitem-link,
-.ui-workflow .ui-workflow-item.ui-state-disabled .ui-menuitem-link {
-    cursor: default;
+.ui-workflow-step:after,
+.ui-workflow-step:before {
+    position: absolute;
+    content: '';
+    left: 0px;
+    height: 50%;
+    width: 100%;
+    border-top: 2px solid;
+    border-bottom: 2px solid;
+    border-left: 3px solid; /* thicker border as skew makes them look thin */
+    border-right: 3px solid;
+    z-index:-1;
+    background: lightgray;
 }
 
-.ui-workflow .ui-workflow-number {
-    font-size: 200%;
-    display: block;
+.ui-workflow-step:before {
+    transform: skew(45deg);
+    top: 0px;
+    border-bottom: none;
+    transform-origin: top left;
 }
 
-.ui-workflow .ui-workflow-title {
-    display: block;
-    white-space: nowrap;
-
+.ui-workflow-step:after {
+    transform: skew(-45deg);
+    bottom: 0px;
+    border-top: none;
+    transform-origin: bottom left;
 }
 
-.ui-workflow .ui-workflow-step-late {
+.ui-workflow-step span{
+    display: inline-block;
+    padding-left: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    height: 75%;
+    vertical-align: left;
+}
+
+.ui-workflow-step.ui-workflow-step-executed span{
+    font-weight: bold;
+    color:aqua;
+}
+.ui-workflow-step.ui-workflow-step-executed:before,
+.ui-workflow-step.ui-workflow-step-executed:after {
+    z-index:-1;
+    background: limegreen;
+}
+
+.ui-workflow-step.ui-workflow-step-running span{
+    font-weight: bold;
+    color:black;
+}
+.ui-workflow-step.ui-workflow-step-running:before,
+.ui-workflow-step.ui-workflow-step-running:after {
+    z-index:-1;
+    background: lightskyblue;
+}
+.ui-workflow-step.ui-workflow-step-failed span{
+    font-weight: bold;
+    color:black;
+}
+.ui-workflow-step.ui-workflow-step-failed:before,
+.ui-workflow-step.ui-workflow-step-failed:after {
+    z-index:-1;
+    background: red;
+}
+.ui-workflow-step.ui-workflow-step-notexecuted span{
+    font-weight: bolder;
+    color:#3383bb;
+}
+.ui-workflow-step.ui-workflow-step-notexecuted:before,
+.ui-workflow-step.ui-workflow-step-notexecuted:after {
+    z-index:-1;
+    background: lightgray;
+}
+
+
+.ui-workflow-step.ui-workflow-step-problematic span{
+    font-weight: bolder;
+    color:#3383bb;
+}
+.ui-workflow-step.ui-workflow-step-problematic:before,
+.ui-workflow-step.ui-workflow-step-problematic:after {
+    z-index:-1;
+    background: orange;
+}
+
+.ui-workflow-disabled{
+    opacity:0.60;
+}
+
+.ui-workflow-step-early{
+    color:darkgreen;
+}
+
+.ui-workflow-step-late{
     color: crimson;
-}
-
-.ui-workflow .ui-workflow-step-early {
-    color: limegreen;
-}
-
-.ui-workflow-step-problematic {
-    background-color: orange;
-}
-
-.ui-workflow-step-failed {
-    background-color: red;
-}
-
-.ui-workflow-step-ok {
-    background-color: lime;
 }

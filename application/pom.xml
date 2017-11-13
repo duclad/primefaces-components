@@ -143,6 +143,11 @@
             <version>${primefaces-theme.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.primefaces.themes</groupId>
+            <artifactId>all-themes</artifactId>
+            <version>${primefaces-theme.version}</version>
+        </dependency>
+        <dependency>
             <groupId>ro.duclad.primefaces</groupId>
             <artifactId>workflow</artifactId>
             <version>1.0.0-SNAPSHOT</version>

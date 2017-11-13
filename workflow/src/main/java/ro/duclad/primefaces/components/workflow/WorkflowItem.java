@@ -5,12 +5,13 @@
 
 package ro.duclad.primefaces.components.workflow;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import org.primefaces.component.api.AjaxSource;
+import org.primefaces.component.api.Confirmable;
+import org.primefaces.component.api.PrimeClientBehaviorHolder;
+import org.primefaces.component.api.UIOutcomeTarget;
+import org.primefaces.model.menu.MenuItem;
+import org.primefaces.util.ComponentUtils;
+
 import javax.el.MethodExpression;
 import javax.faces.application.ResourceDependencies;
 import javax.faces.component.FacesComponent;
@@ -21,13 +22,12 @@ import javax.faces.component.behavior.ClientBehaviorHolder;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.BehaviorEvent;
-
-import org.primefaces.component.api.AjaxSource;
-import org.primefaces.component.api.Confirmable;
-import org.primefaces.component.api.PrimeClientBehaviorHolder;
-import org.primefaces.component.api.UIOutcomeTarget;
-import org.primefaces.model.menu.MenuItem;
-import org.primefaces.util.ComponentUtils;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @ResourceDependencies({})
 @FacesComponent("ro.duclad.primefaces.components.WorkflowItem")
@@ -320,53 +320,55 @@ public class WorkflowItem extends UICommand implements AjaxSource, UIOutcomeTarg
         this.getStateHelper().put(WorkflowItem.PropertyKeys.rel, _rel);
     }
 
-    public Integer getLimitDuration() {
-        return (Integer) this.getStateHelper().eval(PropertyKeys.limitDuration, null);
+    public Integer getStepLimitDuration() {
+        return (Integer) this.getStateHelper().eval(PropertyKeys.stepLimitDuration, null);
     }
 
-    public void setLimitDuration(int limitDuration) {
-        this.getStateHelper().put(PropertyKeys.limitDuration, limitDuration);
+    public void setStepLimitDuration(int limitDuration) {
+        this.getStateHelper().put(PropertyKeys.stepLimitDuration, limitDuration);
     }
 
-    public Integer getDuration() {
-        return (Integer) this.getStateHelper().eval(PropertyKeys.duration, null);
+    public Integer getStepDuration() {
+        return (Integer) this.getStateHelper().eval(PropertyKeys.stepDuration, null);
     }
 
-    public void setDuration(int duration) {
-        this.getStateHelper().put(PropertyKeys.duration, duration);
+    public void setStepDuration(int duration) {
+        this.getStateHelper().put(PropertyKeys.stepDuration, duration);
     }
 
-    public Boolean isShowDuration() {
-        return (Boolean) this.getStateHelper().eval(PropertyKeys.showDuration, true);
+    public Boolean isShowStepDuration() {
+        return (Boolean) this.getStateHelper().eval(PropertyKeys.showStepDuration, true);
     }
 
-    public void setShowDuration(boolean showDuration) {
-        this.getStateHelper().put(PropertyKeys.showDuration, showDuration);
+    public void setShowStepDuration(boolean showDuration) {
+        this.getStateHelper().put(PropertyKeys.showStepDuration, showDuration);
     }
 
-    public Boolean isProblematic() {
-        return (Boolean) this.getStateHelper().eval(PropertyKeys.problematic, false);
+    public Boolean isStepProblematic() {
+        return (Boolean) this.getStateHelper().eval(PropertyKeys.stepProblematic, false);
     }
 
-    public void setProblematic(boolean problematic) {
-        this.getStateHelper().put(PropertyKeys.problematic, problematic);
+    public void setStepProblematic(boolean problematic) {
+        this.getStateHelper().put(PropertyKeys.stepProblematic, problematic);
     }
 
-    public Boolean isFailed() {
-        return (Boolean) this.getStateHelper().eval(PropertyKeys.failed, false);
+
+    public WorkflowItemState getStepState() {
+        return (WorkflowItemState) this.getStateHelper().eval(PropertyKeys.stepState, WorkflowItemState.NOT_EXECUTED);
     }
 
-    public void setFailed(boolean failed) {
-        this.getStateHelper().put(PropertyKeys.failed, failed);
+    public void setStepState(WorkflowItemState state) {
+        this.getStateHelper().put(PropertyKeys.stepState, state);
     }
 
-    public Boolean isExecuted() {
-        return (Boolean) this.getStateHelper().eval(PropertyKeys.executed, false);
+    public String getStepOutcome() {
+        return (String) this.getStateHelper().eval(WorkflowItem.PropertyKeys.stepOutcome, null);
     }
 
-    public void setExecuted(boolean executed) {
-        this.getStateHelper().put(PropertyKeys.executed, executed);
+    public void setStepOutcome(String outcome) {
+        this.getStateHelper().put(WorkflowItem.PropertyKeys.stepOutcome, outcome);
     }
+
 
     public Map<String, Class<? extends BehaviorEvent>> getBehaviorEventMapping() {
         return BEHAVIOR_EVENT_MAPPING;
@@ -458,6 +460,8 @@ public class WorkflowItem extends UICommand implements AjaxSource, UIOutcomeTarg
         return this.confirmationScript != null;
     }
 
+    public enum WorkflowItemState {NOT_EXECUTED, EXECUTED, RUNNING, FAILED}
+
     public enum PropertyKeys {
         url,
         target,
@@ -492,12 +496,12 @@ public class WorkflowItem extends UICommand implements AjaxSource, UIOutcomeTarg
         form,
         escape,
         rel,
-        limitDuration,
-        duration,
-        showDuration,
-        executed,
-        problematic,
-        failed;
+        stepLimitDuration,
+        stepDuration,
+        showStepDuration,
+        stepProblematic,
+        stepState,
+        stepOutcome;
 
         String toString;
 

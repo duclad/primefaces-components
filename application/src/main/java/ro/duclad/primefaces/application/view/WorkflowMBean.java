@@ -18,10 +18,9 @@ package ro.duclad.primefaces.application.view;
 
 import lombok.Getter;
 import lombok.Setter;
-import ro.duclad.primefaces.application.domain.WorkflowStep;
-import ro.duclad.primefaces.application.services.WorkflowService;
 import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.MenuModel;
+import ro.duclad.primefaces.application.services.WorkflowService;
 import ro.duclad.primefaces.components.workflow.WorkflowItem;
 
 import javax.annotation.PostConstruct;
@@ -29,11 +28,6 @@ import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Welcome Page.
@@ -54,55 +48,32 @@ public class WorkflowMBean implements Serializable {
     private WorkflowService workflowService;
 
     private MenuModel workflow;
+    private MenuModel executedSteps;
 
-    private Map<WorkflowStep, Integer> steps;
-
-    private WorkflowStep currentStep;
 
     @PostConstruct
     public void init() {
         workflow = new DefaultMenuModel();
-        steps = new LinkedHashMap<>();
-        workflowService.getMainSteps().forEach(step -> steps.put(step, step.getDuration()));
-
-        steps.forEach((step, duration) -> {
+        workflowService.getMainSteps().forEach(step -> {
             WorkflowItem workflowItem = new WorkflowItem();
             workflowItem.setValue(step.getName());
-            workflowItem.setLimitDuration(duration);
-            workflowItem.setExecuted(false);
+            workflowItem.setStepLimitDuration(step.getDuration());
             workflow.addElement(workflowItem);
         });
-        currentStep = steps.keySet().stream().findFirst().get();
 
     }
 
     public void loadWorkflow() {
         init();
-        List<WorkflowStep> workflowStepsFromService = workflowService.getWorkflowSteps(fileId);
-        workflowStepsFromService.forEach(step -> steps.put(step, step.getDuration()));
-        AtomicBoolean processFailed = new AtomicBoolean(false);
-        workflowStepsFromService.forEach(step -> {
-            Optional<WorkflowItem> workflowStep = workflow.getElements().stream().map(item -> (WorkflowItem) item).filter(item -> item.getValue().equals(step.getName())).findFirst();
-            if (workflowStep.isPresent()) {
-                WorkflowItem item = workflowStep.get();
-                item.setDuration(step.getDuration());
-                item.setProblematic(step.getProblematic());
-                item.setExecuted(true);
-            } else {
-                processFailed.set(true);
-            }
+        executedSteps = new DefaultMenuModel();
+        workflowService.getWorkflowSteps(fileId).forEach(step -> {
+            WorkflowItem workflowItem = new WorkflowItem();
+            workflowItem.setValue(step.getName());
+            workflowItem.setStepDuration(step.getDuration());
+            workflowItem.setStepState(WorkflowItem.WorkflowItemState.valueOf(step.getStatus().toString()));
+            workflowItem.setStepProblematic(step.isProblematic());
+            workflowItem.setStepOutcome(step.getOutcome());
+            executedSteps.addElement(workflowItem);
         });
-        if (processFailed.get()) {
-            Optional<WorkflowItem> workflowItem = workflow.getElements().stream().reduce((first, second) -> second).map(item -> (WorkflowItem) item);
-            workflowItem.ifPresent(item -> {
-                item.setFailed(true);
-                item.setExecuted(true);
-                item.setShowDuration(false);
-            });
-            currentStep = steps.keySet().stream().reduce((first, second) -> second).get();
-
-        } else {
-            currentStep = workflowStepsFromService.stream().reduce((first, second) -> second).get();
-        }
     }
 }

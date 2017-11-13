@@ -4,6 +4,7 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui"
+      xmlns:w="http://ro.duclad.primefaces/workflow"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <f:view contentType="text/html">
@@ -12,32 +13,25 @@
             <title>.:: Components::.</title>
             <meta content='text/html; charset=UTF-8' http-equiv="Content-Type" />
             <link href="#{resource['images/favicon.ico']}" rel="shortcut icon"/>
-            <h:outputStylesheet name="starter.css" />
-            <h:outputScript name="starter.js" />
+            <!--<h:outputStylesheet name="starter.css" />-->
+            <!--<h:outputScript name="starter.js" />-->
         </h:head>
 
-        <h:body>            
+        <h:body>
+
             <p:layout fullPage="true" >
                 <p:layoutUnit position="center" >
                     <h:form id="contentForm" prependId="false" enctype="multipart/form-data">
-                        <p:ajaxStatus onstart="PF('statusDialog').show();"
-                                      onsuccess="PF('statusDialog').hide();" />
-                        <p:dialog widgetVar="statusDialog" position="right top"
-                                  draggable="false" resizable="false" closable="false"
-                                  showHeader="false" modal="false">
-                            <center>
-                                <p:graphicImage value="#{resource['images/ajaxloading.gif']}" />
-                            </center>
-                        </p:dialog>
+
                         <div id="starterDiv" class="ui-fluid">
-                                <p:menubar>
-                                    <p:menuitem value="WorkFlow" ajax="true" update="@form" onsuccess="updateHistory('Starter', 'index.jsf?content=workflow')"
-                                                actionListener="#{contentMBean.setPage('workflow')}" />
-                                </p:menubar>
+                            <p:menubar>
+                                <p:menuitem value="WorkFlow" ajax="true" update="@form" onsuccess="updateHistory('Starter', 'index.jsf?content=workflow')"
+                                            actionListener="#{contentMBean.setPage('workflow')}" />
+                            </p:menubar>
 
-                                <p:spacer height="10" />
+                            <p:spacer height="10" />
 
-                                <ui:include id="spa_content" src="content/#{contentMBean.page}.xhtml"/>
+                            <ui:include id="spa_content" src="content/#{contentMBean.page}.xhtml"/>
                         </div>
                     </h:form>
                 </p:layoutUnit>

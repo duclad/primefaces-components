@@ -1,7 +1,7 @@
 jsf:
   PROJECT_STAGE: Production
   primefaces:
-    theme: overcast
+    theme: aristo
 tomcat:
   version: @tomcat.version@
 jetty:
