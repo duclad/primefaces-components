@@ -72,12 +72,12 @@
 
 .ui-workflow-step.ui-workflow-step-executed span{
     font-weight: bold;
-    color:aqua;
+    color:black;
 }
 .ui-workflow-step.ui-workflow-step-executed:before,
 .ui-workflow-step.ui-workflow-step-executed:after {
     z-index:-1;
-    background: limegreen;
+    background: #3cb371;
 }
 
 .ui-workflow-step.ui-workflow-step-running span{
@@ -87,7 +87,7 @@
 .ui-workflow-step.ui-workflow-step-running:before,
 .ui-workflow-step.ui-workflow-step-running:after {
     z-index:-1;
-    background: lightskyblue;
+    background: #add8e6;
 }
 .ui-workflow-step.ui-workflow-step-failed span{
     font-weight: bold;
@@ -96,7 +96,7 @@
 .ui-workflow-step.ui-workflow-step-failed:before,
 .ui-workflow-step.ui-workflow-step-failed:after {
     z-index:-1;
-    background: red;
+    background: #cd5c5c;
 }
 .ui-workflow-step.ui-workflow-step-notexecuted span{
     font-weight: bolder;
@@ -111,12 +111,12 @@
 
 .ui-workflow-step.ui-workflow-step-problematic span{
     font-weight: bolder;
-    color:#3383bb;
+    color:black;
 }
 .ui-workflow-step.ui-workflow-step-problematic:before,
 .ui-workflow-step.ui-workflow-step-problematic:after {
     z-index:-1;
-    background: orange;
+    background: #f4a460;
 }
 
 .ui-workflow-disabled{

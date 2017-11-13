@@ -1,4 +1,4 @@
-package ro.duclad.primefaces.application.domain;
+package ro.duclad.primefaces.application.domain.workflow;
 
 import lombok.Builder;
 import lombok.Data;

@@ -115,6 +115,10 @@ public class WorkflowRenderer extends BaseMenuRenderer {
 
         this.encodeMenuItem(context, workflow, item, activeIndex, index);
         writer.endElement("li");
+        writer.startElement("span", null);
+        writer.writeText("\n", null);
+        writer.endElement("span");
+
     }
 
 

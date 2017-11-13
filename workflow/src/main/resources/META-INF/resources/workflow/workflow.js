@@ -21,9 +21,9 @@ function adjustWorkflow() {
         'width': '-webkit-calc((100% + 4px - ' + reduction + 'px)/' + items + ' + ' + factor + 'px)',
         'width': 'calc((100% + 4px - ' + reduction + 'px)/' + items + ' + ' + factor + 'px)'
     });
-    $('.ui-workflow-step:last-child').css({
-        'width': '-webkit-calc((100% + 4px - ' + reduction + 'px)/' + items + ' + ' + reduction + 'px)',
-        'width': 'calc((100% + 4px - ' + reduction + 'px)/' + items + ' + ' + reduction + 'px)'
+    $('.ui-workflow-step:last').css({
+        'width': '-webkit-calc((100% + 4px - ' + reduction + 'px)/' + items + ' + ' + factor + 'px)',
+        'width': 'calc((100% + 4px - ' + reduction + 'px)/' + items + ' + ' + factor + 'px)'
     });
     // 26px because to make up for the left offset. Size of last-child is also increased to avoid the skewed area on right being shown
     $('.ui-workflow-step span:first-child').css('padding-left', (skewOffset + 15) + "px");
@@ -31,7 +31,7 @@ function adjustWorkflow() {
         'width': '-webkit-calc(100% - ' + factor + 'px)',
         'width': 'calc(100% - ' + factor + 'px)'
     });
-    $('.ui-workflow-step:last-child span').css({
+    $('.ui-workflow-step:last span').css({
         'width': '-webkit-calc(100% - ' + factor + 'px)',
         'width': 'calc(100% - ' + factor + 'px)'
     });
